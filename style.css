@@ -29,8 +29,7 @@ body{
 svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 :focus-visible{outline:2px solid var(--pri);outline-offset:2px}
 
-/* crisp glassy surfaces, no borders, 6px blur only */
-.tile,.login-card,.topbar,.sidebar,.toast{
+.tile,.login-card,.topbar,.sidebar,.toast,.dash-head{
   background:var(--glass);
   backdrop-filter:blur(6px) saturate(130%);
   -webkit-backdrop-filter:blur(6px) saturate(130%);
@@ -38,7 +37,7 @@ svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stro
   border:0;
 }
 @supports not (backdrop-filter:blur(1px)){
-  .tile,.login-card,.topbar,.sidebar,.toast{background:var(--solid)}
+  .tile,.login-card,.topbar,.sidebar,.toast,.dash-head{background:var(--solid)}
 }
 
 input,select{
@@ -55,7 +54,6 @@ select option{background:var(--solid);color:var(--tx)}
 .sub.c{text-align:center;margin-bottom:26px}
 .dim{color:var(--dim);font-size:13.5px}
 
-/* flat solid primary, no gradient, no glow */
 .btn{
   border:0;border-radius:14px;padding:12px 18px;font-family:inherit;font-weight:600;
   font-size:14px;cursor:pointer;display:inline-flex;gap:8px;align-items:center;justify-content:center;
@@ -84,7 +82,7 @@ select option{background:var(--solid);color:var(--tx)}
 .logo{width:62px;height:62px;border-radius:20px;margin:0 auto 16px;display:grid;place-items:center;color:var(--ink);background:var(--pri)}.logo svg{width:30px;height:30px}
 .login-card h1{text-align:center;font-size:27px;font-weight:800;letter-spacing:-.03em;margin-bottom:4px}
 
-/* floating label: rest offset matches typed text (48px), floats straight up */
+/* floating label */
 .ig{position:relative;margin-bottom:14px}
 .ig input{height:56px;padding:20px 48px 4px 48px}
 .ig label{position:absolute;left:48px;top:18px;font-size:14.5px;color:var(--dim);pointer-events:none;transition:top .18s,font-size .18s,color .18s}
@@ -116,6 +114,30 @@ select option{background:var(--solid);color:var(--tx)}
 .nav-btn.active{background:var(--pri);color:var(--ink)}
 .content{flex:1;min-width:0;padding:6px}
 .page h2{font-size:28px;font-weight:800;letter-spacing:-.03em;margin-bottom:4px}
+
+/* dashboard header */
+.dash-head{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 20px;margin-bottom:14px;border-radius:var(--r);
+  flex-wrap:wrap
+}
+.avatar{
+  width:54px;height:54px;border-radius:16px;display:grid;place-items:center;
+  font-weight:800;font-size:22px;flex-shrink:0;
+  background:var(--pri);color:var(--ink);box-shadow:var(--sh-sm)
+}
+.avatar.admin{background:var(--ink);color:var(--pri)}
+.dash-id{flex:1;min-width:0}
+.dash-kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:2px}
+.dash-title{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.15;margin:0}
+.dash-sub{font-size:13.5px;color:var(--dim);margin-top:4px}
+.role-pill{
+  margin-left:auto;align-self:flex-start;
+  font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  padding:8px 14px;border-radius:99px;
+  background:var(--chip);color:var(--tx)
+}
+.role-pill.admin{background:var(--pri);color:var(--ink)}
 
 /* tiles */
 .tile{border-radius:var(--r);padding:20px;background:var(--solid)}
@@ -204,5 +226,8 @@ form.tile .btn+.btn{margin-left:8px}
   .hide-sm{display:none}
   .stats{grid-template-columns:1fr}
   #toasts{bottom:90px}
+  .dash-head{padding:16px;gap:12px}
+  .dash-title{font-size:22px}
+  .role-pill{margin-left:0;order:3}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
