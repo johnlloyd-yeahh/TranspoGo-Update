@@ -38,6 +38,10 @@ const SAMPLE = [
   ["Vigan", "Manila", "Bus", 500], ["Manila", "Baguio", "Bus", 450]
 ];
 
+/* Friendly display names for the default demo accounts so the greeting
+   never repeats the username ("Good day, user" next to a "Passenger" pill). */
+const DISPLAY_NAMES = { admin: "Administrator", user: "Passenger" };
+
 /* ============================================================
    DATA CLASSES
    ============================================================ */
@@ -102,6 +106,10 @@ class Auth {
     this.areas = [localStorage, sessionStorage];
   }
   get isAdmin() { return !!this.user && this.user.role === "admin"; }
+  get displayName() {
+    if (!this.user) return "";
+    return this.user.name || DISPLAY_NAMES[this.user.username.toLowerCase()] || this.user.username;
+  }
   get secondsLeft() { return Math.max(0, Math.ceil((this.lockUntil - Date.now()) / 1000)); }
   attempt(username, password) {
     const account = this.accounts.find(a => a.username === username.trim().toLowerCase() && a.password === password);
@@ -221,18 +229,14 @@ class Dashboard extends View {
     $("dashPassenger").classList.toggle("hidden", adm);
     $("dashAdmin").classList.toggle("hidden", !adm);
 
-    // header: never repeat "admin" (username == role name)
-    const raw = auth.user.username;
-    const name = auth.user.name || raw;
-    const isDefaultAdmin = adm && raw.toLowerCase() === "admin";
-    const displayName = isDefaultAdmin ? "Administrator" : name;
-
-    $("greetAvatar").textContent = displayName.charAt(0).toUpperCase();
+    // Header: friendly display name, never repeats "admin"/"user" next to the role pill
+    const display = auth.displayName;
+    $("greetAvatar").textContent = display.charAt(0).toUpperCase();
     $("greetAvatar").classList.toggle("admin", adm);
     $("rolePill").textContent = adm ? "Admin" : "Passenger";
     $("rolePill").classList.toggle("admin", adm);
     $("greetKicker").textContent = adm ? "Admin console" : "Welcome back";
-    $("greet").textContent = `Good day, ${displayName}`;
+    $("greet").textContent = `Good day, ${display}`;
     $("greetSub").textContent = adm
       ? "Manage routes, monitor coverage, and keep fares accurate."
       : "Your transportation overview.";
@@ -386,12 +390,9 @@ class App {
     if (page === "manage") this.manager.render();
   }
   enter() {
-    const u = this.auth.user;
-    // topbar badge: show name once — if username is literally "admin", just show "Admin"
-    const adm = this.auth.isAdmin;
-    const label = adm && u.username.toLowerCase() === "admin" ? "Admin" : `${u.username} · ${adm ? "Admin" : "Passenger"}`;
+    const adm = this.auth.isAdmin, display = this.auth.displayName;
     $("loginPage").classList.add("hidden"); $("appPage").classList.remove("hidden");
-    $("welcomeUser").textContent = label;
+    $("welcomeUser").textContent = display;
     $$(".admin-only").forEach(b => b.classList.toggle("hidden", !adm));
     this.go("dashboard");
   }
