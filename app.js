@@ -220,7 +220,23 @@ class Dashboard extends View {
     const { db, auth, history } = this.app, adm = auth.isAdmin, pop = db.popular();
     $("dashPassenger").classList.toggle("hidden", adm);
     $("dashAdmin").classList.toggle("hidden", !adm);
-    $("greet").textContent = "Good day, " + auth.user.username;
+
+    // header: never repeat "admin" (username == role name)
+    const raw = auth.user.username;
+    const name = auth.user.name || raw;
+    const isDefaultAdmin = adm && raw.toLowerCase() === "admin";
+    const displayName = isDefaultAdmin ? "Administrator" : name;
+
+    $("greetAvatar").textContent = displayName.charAt(0).toUpperCase();
+    $("greetAvatar").classList.toggle("admin", adm);
+    $("rolePill").textContent = adm ? "Admin" : "Passenger";
+    $("rolePill").classList.toggle("admin", adm);
+    $("greetKicker").textContent = adm ? "Admin console" : "Welcome back";
+    $("greet").textContent = `Good day, ${displayName}`;
+    $("greetSub").textContent = adm
+      ? "Manage routes, monitor coverage, and keep fares accurate."
+      : "Your transportation overview.";
+
     if (!adm) {
       $("pRoutes").textContent = db.count; $("pAvg").textContent = db.count ? "₱" + db.average() : "—";
       $("pRecent").innerHTML = history.list().slice(0, 5).map(h => `<button class="chip" data-o="${esc(h.o)}" data-d="${esc(h.d)}">${esc(h.o)} → ${esc(h.d)}</button>`).join("") || '<span class="dim">Your searches show up here.</span>';
@@ -371,9 +387,12 @@ class App {
   }
   enter() {
     const u = this.auth.user;
+    // topbar badge: show name once — if username is literally "admin", just show "Admin"
+    const adm = this.auth.isAdmin;
+    const label = adm && u.username.toLowerCase() === "admin" ? "Admin" : `${u.username} · ${adm ? "Admin" : "Passenger"}`;
     $("loginPage").classList.add("hidden"); $("appPage").classList.remove("hidden");
-    $("welcomeUser").textContent = `${u.username} · ${u.role === "admin" ? "Admin" : "Passenger"}`;
-    $$(".admin-only").forEach(b => b.classList.toggle("hidden", !this.auth.isAdmin));
+    $("welcomeUser").textContent = label;
+    $$(".admin-only").forEach(b => b.classList.toggle("hidden", !adm));
     this.go("dashboard");
   }
 
